@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model WeddingPhoto {
+  id           String   @id @default(uuid()) @db.Uuid
+  fileKey      String   @unique @map("file_key")
+  displayOrder Int      @default(0) @map("display_order")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("wedding_photos")
+}
+
+model GuestPhoto {
+  id           String   @id @default(uuid()) @db.Uuid
+  fileKey      String   @unique @map("file_key")
+  originalName String?  @map("original_name")
+  fileSize     Int      @map("file_size")
+  uploadedAt   DateTime @default(now()) @map("uploaded_at")
+
+  @@map("guest_photos")
+}
