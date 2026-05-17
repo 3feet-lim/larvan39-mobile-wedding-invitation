@@ -1,0 +1,9 @@
+.git
+.omx
+.next
+node_modules
+.env
+.env*.local
+Dockerfile*
+docker-compose*.yml
+README.md

@@ -16,8 +16,13 @@ function baseClient(endpoint: string) {
   });
 }
 
-export const s3 = baseClient(requiredEnv('S3_ENDPOINT'));
-const publicPresignClient = baseClient(requiredEnv('S3_PUBLIC_ENDPOINT'));
+function internalClient() {
+  return baseClient(requiredEnv('S3_ENDPOINT'));
+}
+
+function publicClient() {
+  return baseClient(requiredEnv('S3_PUBLIC_ENDPOINT'));
+}
 
 export function bucketName(kind: BucketKind) {
   return kind === 'wedding' ? requiredEnv('S3_BUCKET_WEDDING') : requiredEnv('S3_BUCKET_GUEST');
@@ -29,22 +34,22 @@ export function publicObjectUrl(kind: BucketKind, key: string) {
 
 export async function createPutUrl(kind: BucketKind, key: string, contentType: string) {
   return getSignedUrl(
-    publicPresignClient,
+    publicClient(),
     new PutObjectCommand({ Bucket: bucketName(kind), Key: key, ContentType: contentType }),
     { expiresIn: 600 },
   );
 }
 
 export async function createGetUrl(kind: BucketKind, key: string) {
-  return getSignedUrl(s3, new GetObjectCommand({ Bucket: bucketName(kind), Key: key }), { expiresIn: 600 });
+  return getSignedUrl(publicClient(), new GetObjectCommand({ Bucket: bucketName(kind), Key: key }), { expiresIn: 600 });
 }
 
 export async function deleteObject(kind: BucketKind, key: string) {
-  await s3.send(new DeleteObjectCommand({ Bucket: bucketName(kind), Key: key }));
+  await internalClient().send(new DeleteObjectCommand({ Bucket: bucketName(kind), Key: key }));
 }
 
 export async function objectToBuffer(kind: BucketKind, key: string) {
-  const object = await s3.send(new GetObjectCommand({ Bucket: bucketName(kind), Key: key }));
+  const object = await internalClient().send(new GetObjectCommand({ Bucket: bucketName(kind), Key: key }));
   const chunks: Buffer[] = [];
   for await (const chunk of object.Body as AsyncIterable<Uint8Array>) chunks.push(Buffer.from(chunk));
   return Buffer.concat(chunks);

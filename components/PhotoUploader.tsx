@@ -4,7 +4,7 @@ import imageCompression from 'browser-image-compression';
 import { useState } from 'react';
 
 type Mode = 'guest' | 'wedding';
-type Item = { name: string; status: string; progress: number; error?: string };
+type Item = { file: File; name: string; status: string; progress: number; error?: string };
 
 export function PhotoUploader({ mode, onDone }: { mode: Mode; onDone?: () => void }) {
   const [items, setItems] = useState<Item[]>([]);
@@ -60,19 +60,30 @@ export function PhotoUploader({ mode, onDone }: { mode: Mode; onDone?: () => voi
     update({ status: id ? '완료' : '감사합니다', progress: 100 });
   }
 
-  async function onSelect(event: React.ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(event.target.files ?? []);
-    setItems(files.map((file) => ({ name: file.name, status: '대기', progress: 0 })));
+  async function uploadFiles(nextItems: Item[]) {
     setBusy(true);
-    for (let i = 0; i < files.length; i += 1) {
+    for (let i = 0; i < nextItems.length; i += 1) {
       try {
-        await uploadFile(files[i], i);
+        if (nextItems[i].status === '완료' || nextItems[i].status === '감사합니다') continue;
+        await uploadFile(nextItems[i].file, i);
       } catch (error) {
         setItems((prev) => prev.map((item, idx) => (idx === i ? { ...item, status: '실패', error: error instanceof Error ? error.message : '오류' } : item)));
       }
     }
     setBusy(false);
     onDone?.();
+  }
+
+  async function onSelect(event: React.ChangeEvent<HTMLInputElement>) {
+    const nextItems = Array.from(event.target.files ?? []).map((file) => ({ file, name: file.name, status: '대기', progress: 0 }));
+    setItems(nextItems);
+    await uploadFiles(nextItems);
+  }
+
+  async function retry(index: number) {
+    const nextItems = items.map((item, idx) => (idx === index ? { ...item, status: '대기', progress: 0, error: undefined } : item));
+    setItems(nextItems);
+    await uploadFiles(nextItems);
   }
 
   return (
@@ -87,7 +98,12 @@ export function PhotoUploader({ mode, onDone }: { mode: Mode; onDone?: () => voi
           <div key={item.name} className="card p-4">
             <div className="flex justify-between gap-4 text-sm"><span className="truncate">{item.name}</span><span>{item.status}</span></div>
             <div className="mt-3 h-2 overflow-hidden rounded-full bg-accent/15"><div className="h-full bg-accent" style={{ width: `${item.progress}%` }} /></div>
-            {item.error && <p className="mt-2 text-sm text-red-700">{item.error}</p>}
+            {item.error && (
+              <div className="mt-3 flex items-center justify-between gap-3 text-sm">
+                <p className="text-red-700">{item.error}</p>
+                <button className="line-button py-2" type="button" onClick={() => retry(items.indexOf(item))} disabled={busy}>재시도</button>
+              </div>
+            )}
           </div>
         ))}
       </div>

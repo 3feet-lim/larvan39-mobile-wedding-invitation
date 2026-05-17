@@ -13,7 +13,7 @@ export async function GET() {
     if (data) zip.file(photo.originalName || `${photo.id}.jpg`, data);
   }
   const buffer = await zip.generateAsync({ type: 'nodebuffer' });
-  return new NextResponse(buffer, {
+  return new NextResponse(new Uint8Array(buffer), {
     headers: {
       'Content-Type': 'application/zip',
       'Content-Disposition': 'attachment; filename="guest-photos.zip"',

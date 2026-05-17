@@ -1,6 +1,8 @@
 import type { NextConfig } from 'next';
 
-function remotePatternFrom(url?: string) {
+type ImageRemotePattern = { protocol: 'http' | 'https'; hostname: string; port: string; pathname: string };
+
+function remotePatternFrom(url?: string): ImageRemotePattern | null {
   if (!url) return null;
   try {
     const parsed = new URL(url);
@@ -17,7 +19,7 @@ function remotePatternFrom(url?: string) {
 
 const configured = [process.env.S3_PUBLIC_ENDPOINT, process.env.NEXT_PUBLIC_SITE_URL]
   .map(remotePatternFrom)
-  .filter(Boolean) as NonNullable<NextConfig['images']>['remotePatterns'];
+  .filter((pattern): pattern is ImageRemotePattern => Boolean(pattern));
 
 const nextConfig: NextConfig = {
   images: {

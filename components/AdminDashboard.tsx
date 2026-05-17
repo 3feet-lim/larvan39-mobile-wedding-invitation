@@ -7,16 +7,24 @@ import { PhotoUploader } from './PhotoUploader';
 
 type WeddingPhoto = { id: string; fileKey: string; displayOrder: number; url: string };
 type GuestPhoto = { id: string; fileKey: string; originalName: string | null; fileSize: number; uploadedAt: string; url: string };
+type GuestPhotoResponse = { photos: GuestPhoto[]; page: number; pageSize: number; total: number };
 
 export function AdminDashboard({ uploadUrl }: { uploadUrl: string }) {
   const [wedding, setWedding] = useState<WeddingPhoto[]>([]);
   const [guests, setGuests] = useState<GuestPhoto[]>([]);
+  const [guestPage, setGuestPage] = useState(1);
+  const [guestTotal, setGuestTotal] = useState(0);
   const [qr, setQr] = useState('');
 
-  async function refresh() {
-    const [weddingResponse, guestResponse] = await Promise.all([fetch('/api/admin/wedding-photos'), fetch('/api/admin/guest-photos')]);
+  async function refresh(page = 1, append = false) {
+    const [weddingResponse, guestResponse] = await Promise.all([fetch('/api/admin/wedding-photos'), fetch(`/api/admin/guest-photos?page=${page}&pageSize=30`)]);
     if (weddingResponse.ok) setWedding((await weddingResponse.json()).photos);
-    if (guestResponse.ok) setGuests((await guestResponse.json()).photos);
+    if (guestResponse.ok) {
+      const data = (await guestResponse.json()) as GuestPhotoResponse;
+      setGuests((current) => (append ? [...current, ...data.photos] : data.photos));
+      setGuestPage(data.page);
+      setGuestTotal(data.total);
+    }
   }
 
   useEffect(() => { refresh(); QRCode.toDataURL(uploadUrl, { width: 512, margin: 2 }).then(setQr); }, [uploadUrl]);
@@ -68,6 +76,11 @@ export function AdminDashboard({ uploadUrl }: { uploadUrl: string }) {
             </div>
           ))}
         </div>
+        {guests.length < guestTotal && (
+          <button className="line-button w-full border-accent text-accent" type="button" onClick={() => refresh(guestPage + 1, true)}>
+            더 보기 ({guests.length}/{guestTotal})
+          </button>
+        )}
       </section>
 
       <section className="space-y-5">

@@ -42,19 +42,13 @@ export default async function Home() {
         <Gallery photos={galleryPhotos} />
       </section>
 
-      <section className="section text-center">
-        <h2 className="font-serif text-2xl">일시와 장소</h2>
-        <div className="mt-8 space-y-3 leading-7">
-          <p>{siteConfig.dateTime}</p>
-          <p>{siteConfig.venue}</p>
-          <p className="text-muted">{siteConfig.address}</p>
-        </div>
-      </section>
 
       <section className="section">
         <h2 className="mb-6 text-center font-serif text-2xl">오시는 길</h2>
-        <div className="mb-5 aspect-[16/10] rounded-[24px] border border-line/20 bg-white/40 p-5 text-center text-sm text-muted">
-          지도 임베드 영역<br />좌표: {siteConfig.lat}, {siteConfig.lng}
+        <div className="mb-5 rounded-[24px] border border-line/20 bg-white/40 p-6 text-center">
+          <p className="font-serif text-xl">{siteConfig.venue}</p>
+          <p className="mt-3 leading-7 text-muted">{siteConfig.address}</p>
+          <p className="mt-3 text-xs text-muted">아래 버튼을 누르면 지도/내비 앱으로 연결됩니다.</p>
         </div>
         <NavButtons />
       </section>
