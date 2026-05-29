@@ -3,22 +3,149 @@
 @tailwind utilities;
 
 :root {
-  --color-bg: #FAF8F5;
-  --color-text: #2A2A2A;
-  --color-text-sub: #7A7A7A;
-  --color-accent: #7A8B7E;
-  --color-border: #2A2A2A;
+  --color-bg: #f4f0ea;
+  --color-paper: #f8f5ef;
+  --color-text: #2a2623;
+  --color-text-sub: #7f7870;
+  --color-accent: #a56f45;
+  --color-border: #2a2623;
   --font-pretendard: Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-gowun: Georgia, 'Times New Roman', serif;
+  --font-cormorant: 'Times New Roman', Georgia, serif;
 }
 
-html, body { min-height: 100%; background: var(--color-bg); color: var(--color-text); }
-body { margin: 0; font-family: var(--font-pretendard); }
+html,
+body {
+  min-height: 100%;
+  background: #e9e3da;
+  color: var(--color-text);
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-pretendard);
+}
+
 * { box-sizing: border-box; }
 a { color: inherit; text-decoration: none; }
 button, input { font: inherit; }
 .no-callout { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
-.mobile-shell { width: min(100%, 480px); margin: 0 auto; min-height: 100vh; background: var(--color-bg); }
-.section { padding: 56px 24px; border-top: 1px solid rgba(42,42,42,0.12); }
-.line-button { border: 1px solid var(--color-border); padding: 12px 16px; border-radius: 999px; background: transparent; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-.input { width: 100%; border: 1px solid rgba(42,42,42,0.25); border-radius: 16px; padding: 12px 14px; background: rgba(255,255,255,0.45); }
-.card { border: 1px solid rgba(42,42,42,0.16); border-radius: 28px; background: rgba(255,255,255,0.36); box-shadow: 0 20px 60px rgba(42,42,42,0.06); }
+
+.mobile-shell {
+  width: min(100%, 480px);
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--color-paper);
+  box-shadow: 0 0 70px rgba(72, 56, 42, 0.18);
+}
+
+.paper-texture {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 8%, rgba(255,255,255,0.78), transparent 28%),
+    radial-gradient(circle at 82% 18%, rgba(130,112,92,0.08), transparent 24%),
+    linear-gradient(115deg, rgba(255,255,255,0.45), rgba(219,210,198,0.2)),
+    var(--color-paper);
+}
+
+.paper-texture::before {
+  content: '';
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  opacity: 0.22;
+  background-image:
+    linear-gradient(92deg, rgba(80,70,58,0.04) 1px, transparent 1px),
+    linear-gradient(12deg, rgba(80,70,58,0.03) 1px, transparent 1px);
+  background-size: 52px 52px, 37px 37px;
+  mix-blend-mode: multiply;
+}
+
+.paper-texture > * {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-section {
+  min-height: 100vh;
+  padding: 30px 34px 62px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero-date {
+  font-family: var(--font-cormorant);
+  font-size: clamp(24px, 7vw, 34px);
+  line-height: 1;
+  letter-spacing: 0.24em;
+  color: #151515;
+}
+
+.hero-title {
+  margin-top: 18px;
+  font-family: var(--font-cormorant);
+  font-size: clamp(21px, 5.9vw, 34px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.22em;
+  color: #111;
+}
+
+.hero-arch {
+  position: relative;
+  width: min(77vw, 360px);
+  aspect-ratio: 0.665;
+  margin-top: clamp(86px, 17vh, 128px);
+  overflow: hidden;
+  border-radius: 999px 999px 0 0;
+  background: #ddd3c9;
+  box-shadow: 0 22px 45px rgba(56, 47, 39, 0.08);
+}
+
+.hero-arch img {
+  object-position: center bottom;
+}
+
+.section {
+  padding: 64px 28px;
+  border-top: 1px solid rgba(42, 38, 35, 0.10);
+}
+
+.section-kicker {
+  margin-bottom: 14px;
+  font-family: var(--font-cormorant);
+  font-size: 12px;
+  letter-spacing: 0.36em;
+  color: var(--color-accent);
+}
+
+.line-button {
+  border: 1px solid rgba(42, 38, 35, 0.32);
+  padding: 12px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--color-text);
+  backdrop-filter: blur(8px);
+}
+
+.input {
+  width: 100%;
+  border: 1px solid rgba(42, 38, 35, 0.22);
+  border-radius: 18px;
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.45);
+}
+
+.card {
+  border: 1px solid rgba(42, 38, 35, 0.14);
+  border-radius: 28px;
+  background: rgba(255,255,255,0.28);
+  box-shadow: 0 20px 60px rgba(72,56,42,0.06);
+  backdrop-filter: blur(8px);
+}
